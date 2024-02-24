@@ -1,7 +1,25 @@
 {
-  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
   "rules": {
-    ".read": true,
-    ".write": true
+    "polls": {
+      "$pollId": {
+        ".read": "true",
+        ".write": "!data.exists() && newData.exists()",
+        "votes": {
+          "$vote": {
+            ".write": "newData.isNumber() && (!data.exists() || newData.val() === data.val() + 1)"
+          }
+        }
+      }
+    },
+    "nextPollId": {
+      // Allow read access
+      ".read": "true",
+
+      // Increment operation only
+      ".write": "!data.exists() && newData.val() === 1 || newData.val() === data.val() + 1",
+
+      // Validate that the nextPollId is a number
+      ".validate": "newData.isNumber()"
+    }
   }
 }
