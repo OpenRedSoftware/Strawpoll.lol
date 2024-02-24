@@ -1,0 +1,108 @@
+body {
+  font-family: "Arial", sans-serif;
+  background: #f7d59c;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#content {
+  width: 80%;
+  max-width: 600px;
+  margin: auto;
+  background: #fff7e6;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border: 2px solid #e6ba8f;
+}
+
+h1 {
+  color: #d35400;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input[type="text"],
+input[type="radio"],
+button {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background-color: #d35400;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #e67e22;
+}
+
+button:disabled {
+  background-color: #cccccc;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li div {
+  background: #ecf0f1;
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+li div::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #3498db;
+  transition: width 0.6s ease;
+}
+
+li div::after {
+  content: attr(data-content);
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  padding-left: 10px;
+}
+
+#addOptionButton {
+  margin-top: 20px;
+}
+
+#pollOptions {
+  display: flex;
+  flex-direction: column;
+}
+
+.loading {
+  display: none; /* Hidden by default, display when loading */
+  position: absolute;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Strawpoll</title>
+  <title>Strawpoll.lol - Simple Strawpoll.me clone</title>
+  <link rel="stylesheet" href="index.css">
+
   <script type="module">
     // Firebase App (the core Firebase SDK) is always required and must be listed first
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
@@ -19,17 +21,8 @@
       child
     } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAshR4OaNmcBGBRvMTsUz2VP7u6pLFCKqA",
-      authDomain: "strawpolllol.firebaseapp.com",
-      databaseURL: "https://strawpolllol-default-rtdb.firebaseio.com",
-      projectId: "strawpolllol",
-      storageBucket: "strawpolllol.appspot.com",
-      messagingSenderId: "955168381009",
-      appId: "1:955168381009:web:45a077fd593c3fd69b0070"
-    };
+    import { firebaseConfig } from './firebaseConfig.js';
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -168,41 +161,60 @@
       pollOptionsDiv.appendChild(newOptionInput);
     }
 
+    function getNewPollId() {
+      const pollIdRef = ref(db, 'nextPollId');
+      return runTransaction(pollIdRef, (currentId) => {
+        return (currentId || 0) + 1;
+      }).then((transaction) => {
+        return transaction.snapshot.val();
+      }).catch((error) => {
+        console.error('Transaction failed: ', error);
+      });
+    }
+
     function createPoll(event) {
       event.preventDefault();
+      const createButton = document.getElementById('createPollButton');
+      createButton.disabled = true; // Disable the button during the async operation
       const pollQuestion = document.getElementById('pollQuestion').value;
       const optionElements = document.getElementsByClassName('poll-option');
       const options = Array.from(optionElements).map(option => option.value.trim()).filter(Boolean);
 
-      const newPoll = {
-        question: pollQuestion,
-        options: options,
-        votes: options.reduce((acc, option) => ({ ...acc, [option]: 0 }), {})
-      };
-
-      const pollsRef = ref(db, 'polls');
-      const newPollRef = push(pollsRef);
-      set(newPollRef, newPoll)
-        .then(() => {
-          const pollId = newPollRef.key;
-          // Redirect to the vote page for the new poll
-          window.location.href = `?page=vote&poll=${pollId}`;
-        })
-        .catch((error) => {
-          console.error('Error saving poll:', error);
-        });
+      getNewPollId().then((pollId) => {
+        const newPoll = {
+          id: pollId,
+          question: pollQuestion,
+          options: options,
+          votes: options.reduce((acc, option) => ({ ...acc, [option]: 0 }), {})
+        };
+        const pollRef = ref(db, 'polls/' + pollId);
+        return set(pollRef, newPoll).then(() => pollId); // Return pollId for the next .then()
+      }).then((pollId) => { // Receive pollId here
+        window.location.href = `?page=vote&poll=${pollId}`;
+      }).catch((error) => {
+        console.error('Error creating poll: ', error);
+      }).finally(() => {
+        createButton.disabled = false; // Re-enable the button after the operation
+      });
     }
 
+
     function submitVote(pollId) {
+      const voteButton = document.getElementById('submitVoteButton');
+      voteButton.disabled = true; // Disable the button during the async operation
       const selectedOption = document.querySelector('input[name="vote"]:checked').value;
       const voteRef = ref(db, 'polls/' + pollId + '/votes/' + selectedOption);
       runTransaction(voteRef, (currentVotes) => {
         return (currentVotes || 0) + 1;
       }).then(() => {
-        // Redirect to the results page for this poll
         window.location.href = `?page=results&pollId=${pollId}`;
+      }).catch((error) => {
+        console.error('Error submitting vote: ', error);
+      }).finally(() => {
+        voteButton.disabled = false; // Re-enable the button after the operation
       });
     }
+
   </script>
 </head>
 
