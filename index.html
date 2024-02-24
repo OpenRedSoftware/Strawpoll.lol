@@ -45,7 +45,6 @@
     };
 
     function displayVotePage() {
-      const db = getDatabase();
       const pollId = new URLSearchParams(window.location.search).get('poll');
       if (!pollId) {
         document.getElementById('content').innerHTML = 'Poll ID is required.';
@@ -84,7 +83,6 @@
 
 
     function displayResultsPage() {
-      const db = getDatabase();
       const pollId = new URLSearchParams(window.location.search).get('pollId');
       const contentDiv = document.getElementById('content');
       contentDiv.innerHTML = ''; // Clear previous content
@@ -107,11 +105,26 @@
             const list = document.createElement('ul');
             for (const [option, votes] of Object.entries(data.votes)) {
               const item = document.createElement('li');
+              item.style.position = 'relative'; // Make the li container relative for absolute positioning of children
+              item.style.minHeight = '24px'; // Ensure item has a minimum height
+
               const bar = document.createElement('div');
               bar.style.width = `${votes * 100 / totalVotes}%`;
-              bar.style.backgroundColor = 'blue'; // Use a loop or different method to vary colors
-              bar.textContent = `${option}: ${votes} votes (${(votes * 100 / totalVotes).toFixed(2)}%)`;
+              bar.style.backgroundColor = 'blue';
+              bar.style.position = 'absolute'; // Position bar absolutely to fill the item from behind
+              bar.style.top = '0';
+              bar.style.left = '0';
+              bar.style.height = '100%';
+              bar.style.zIndex = '1'; // Ensure bar is behind the text
+
+              const text = document.createElement('span'); // Use span for text to overlay on bar
+              text.textContent = `${option}: ${votes} votes (${(votes * 100 / totalVotes).toFixed(2)}%)`;
+              text.style.position = 'relative'; // Position text relatively to ensure it's on top of the bar
+              text.style.zIndex = '2'; // Ensure text appears above the bar
+              text.style.whiteSpace = 'nowrap'; // Prevent text from wrapping
+
               item.appendChild(bar);
+              item.appendChild(text); // Ensure text is added after bar so it appears on top
               list.appendChild(item);
             }
             contentDiv.appendChild(list);
@@ -220,6 +233,13 @@
 
 <body>
   <div id="content"></div>
+
+  <footer>
+    <a href="?page=create">Create a Poll</a> |
+    <a href="https://github.com/OpenRedSoftware/strawpoll.lol" target="_blank">Source Code</a>
+  </footer>
+
 </body>
+
 
 </html>
