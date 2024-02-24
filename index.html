@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strawpoll</title>
+  <script type="module">
+    // Firebase App (the core Firebase SDK) is always required and must be listed first
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      push,
+      set,
+      runTransaction,
+      get,
+      child
+    } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAshR4OaNmcBGBRvMTsUz2VP7u6pLFCKqA",
+      authDomain: "strawpolllol.firebaseapp.com",
+      databaseURL: "https://strawpolllol-default-rtdb.firebaseio.com",
+      projectId: "strawpolllol",
+      storageBucket: "strawpolllol.appspot.com",
+      messagingSenderId: "955168381009",
+      appId: "1:955168381009:web:45a077fd593c3fd69b0070"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.onload = function () {
+      // Get URL parameters
+      const params = new URLSearchParams(window.location.search);
+      const page = params.get('page'); // 'vote', 'results', or 'create'
+
+      // Display appropriate content based on the page parameter
+      switch (page) {
+        case 'vote':
+          displayVotePage();
+          break;
+        case 'results':
+          displayResultsPage();
+          break;
+        default:
+          displayCreatePollPage();
+      }
+    };
+
+    function displayVotePage() {
+      const db = getDatabase();
+      const pollId = new URLSearchParams(window.location.search).get('poll');
+      if (!pollId) {
+        document.getElementById('content').innerHTML = 'Poll ID is required.';
+        return;
+      }
+
+      // Retrieve the poll data from Firebase
+      const pollRef = ref(db, 'polls/' + pollId);
+      get(pollRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const pollData = snapshot.val();
+          // Create the HTML for the voting options
+          let html = `<h1>${pollData.question}</h1>`;
+          pollData.options.forEach((option, index) => {
+            html += `
+        <div>
+          <input type="radio" id="option${index}" name="vote" value="${option}">
+          <label for="option${index}">${option}</label>
+        </div>
+      `;
+          });
+          // Add a submit button
+          html += `<button id="submitVoteButton">Vote</button>`;
+          // Display the HTML in the 'content' div
+          document.getElementById('content').innerHTML = html;
+
+          // Add the event listener to the button
+          document.getElementById('submitVoteButton').addEventListener('click', () => submitVote(pollId));
+        } else {
+          document.getElementById('content').innerHTML = 'Poll not found.';
+        }
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
+
+
+    function displayResultsPage() {
+      const db = getDatabase();
+      const pollId = new URLSearchParams(window.location.search).get('pollId');
+      const contentDiv = document.getElementById('content');
+      contentDiv.innerHTML = ''; // Clear previous content
+
+      const pollRef = ref(db, 'polls/' + pollId);
+      onValue(pollRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          // Calculate total votes
+          const totalVotes = Object.values(data.votes).reduce((total, num) => total + num, 0);
+
+          // Check if totalVotes is greater than zero
+          if (totalVotes > 0) {
+            // Create results header
+            const header = document.createElement('h2');
+            header.textContent = data.question;
+            contentDiv.appendChild(header);
+
+            // Create a list to display poll results
+            const list = document.createElement('ul');
+            for (const [option, votes] of Object.entries(data.votes)) {
+              const item = document.createElement('li');
+              const bar = document.createElement('div');
+              bar.style.width = `${votes * 100 / totalVotes}%`;
+              bar.style.backgroundColor = 'blue'; // Use a loop or different method to vary colors
+              bar.textContent = `${option}: ${votes} votes (${(votes * 100 / totalVotes).toFixed(2)}%)`;
+              item.appendChild(bar);
+              list.appendChild(item);
+            }
+            contentDiv.appendChild(list);
+          } else {
+            // Display a message if there are no votes
+            contentDiv.innerHTML = 'No votes have been cast yet.';
+          }
+        } else {
+          contentDiv.innerHTML = 'Poll not found.';
+        }
+      }, {
+        onlyOnce: true
+      });
+    }
+
+
+
+    function displayCreatePollPage() {
+      const html = `
+    <h1>Create a New Poll</h1>
+    <form id="createPollForm">
+      <input type="text" id="pollQuestion" placeholder="Enter poll question" required>
+      <div id="pollOptions">
+        <input type="text" class="poll-option" placeholder="Option 1" required>
+        <input type="text" class="poll-option" placeholder="Option 2" required>
+      </div>
+      <button type="button" id="addOptionButton">Add Option</button>
+      <button type="submit" id="createPollButton">Create Poll</button>
+    </form>
+  `;
+
+      document.getElementById('content').innerHTML = html;
+
+      // Set up event listeners
+      document.getElementById('addOptionButton').addEventListener('click', addOption);
+      document.getElementById('createPollForm').addEventListener('submit', createPoll);
+    }
+
+
+    function addOption() {
+      const pollOptionsDiv = document.getElementById('pollOptions');
+      const newOptionIndex = pollOptionsDiv.getElementsByClassName('poll-option').length + 1;
+      const newOptionInput = document.createElement('input');
+      newOptionInput.type = 'text';
+      newOptionInput.className = 'poll-option';
+      newOptionInput.placeholder = `Option ${newOptionIndex}`;
+      pollOptionsDiv.appendChild(newOptionInput);
+    }
+
+    function createPoll(event) {
+      event.preventDefault();
+      const pollQuestion = document.getElementById('pollQuestion').value;
+      const optionElements = document.getElementsByClassName('poll-option');
+      const options = Array.from(optionElements).map(option => option.value.trim()).filter(Boolean);
+
+      const newPoll = {
+        question: pollQuestion,
+        options: options,
+        votes: options.reduce((acc, option) => ({ ...acc, [option]: 0 }), {})
+      };
+
+      const pollsRef = ref(db, 'polls');
+      const newPollRef = push(pollsRef);
+      set(newPollRef, newPoll)
+        .then(() => {
+          const pollId = newPollRef.key;
+          // Redirect to the vote page for the new poll
+          window.location.href = `?page=vote&poll=${pollId}`;
+        })
+        .catch((error) => {
+          console.error('Error saving poll:', error);
+        });
+    }
+
+    function submitVote(pollId) {
+      const selectedOption = document.querySelector('input[name="vote"]:checked').value;
+      const voteRef = ref(db, 'polls/' + pollId + '/votes/' + selectedOption);
+      runTransaction(voteRef, (currentVotes) => {
+        return (currentVotes || 0) + 1;
+      }).then(() => {
+        // Redirect to the results page for this poll
+        window.location.href = `?page=results&pollId=${pollId}`;
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <div id="content"></div>
+</body>
+
+</html>
