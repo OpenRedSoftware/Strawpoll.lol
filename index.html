@@ -60,19 +60,20 @@
           let html = `<h1>${pollData.question}</h1>`;
           pollData.options.forEach((option, index) => {
             html += `
-        <div>
-          <input type="radio" id="option${index}" name="vote" value="${option}">
-          <label for="option${index}">${option}</label>
-        </div>
-      `;
+      <label class="vote-option" for="option${index}">
+        <input type="radio" id="option${index}" name="vote" value="${option}">
+        ${option}
+      </label>
+    `;
           });
-          // Add a submit button
-          html += `<button id="submitVoteButton">Vote</button>`;
+          html += `<button id="submitVoteButton" style="margin-right: 0.5rem;">Vote</button>`;
+          html += `<button id="goResultsButton">Results</button>`;
           // Display the HTML in the 'content' div
           document.getElementById('content').innerHTML = html;
 
           // Add the event listener to the button
           document.getElementById('submitVoteButton').addEventListener('click', () => submitVote(pollId));
+          document.getElementById('goResultsButton').addEventListener('click', () => window.location.href = `?page=results&pollId=${pollId}`);
         } else {
           document.getElementById('content').innerHTML = 'Poll not found.';
         }
@@ -132,6 +133,8 @@
             // Display a message if there are no votes
             contentDiv.innerHTML = 'No votes have been cast yet.';
           }
+
+          html += `<button id="goVotePageButton">Vote</button>`;
         } else {
           contentDiv.innerHTML = 'Poll not found.';
         }

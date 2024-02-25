@@ -21,10 +21,10 @@ body {
   border: 2px solid #e6ba8f;
 }
 
-h1 {
+h1, h2 {
   color: #d35400;
   text-align: center;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 form {
@@ -32,9 +32,7 @@ form {
   flex-direction: column;
 }
 
-input[type="text"],
-input[type="radio"],
-button {
+input[type="text"], input[type="radio"], button {
   margin: 10px 0;
   padding: 10px;
   border-radius: 5px;
@@ -60,37 +58,34 @@ button:disabled {
 ul {
   list-style: none;
   padding: 0;
+  margin-top: 20px;
 }
 
-li div {
+li {
+  position: relative;
   background: #ecf0f1;
-  margin-bottom: 5px;
-  padding: 5px;
+  margin-bottom: 10px;
   border-radius: 5px;
   overflow: hidden;
-  position: relative;
 }
 
-li div::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
+li > div {
   background-color: #3498db;
-  transition: width 0.6s ease;
+  height: 100%;
+  border-radius: 5px 0 0 5px; /* Match the li border radius */
 }
 
-li div::after {
-  content: attr(data-content);
-  position: relative;
-  white-space: nowrap;
-  overflow: hidden;
-  display: block;
-  padding-left: 10px;
+li > span {
+  position: absolute;
+  z-index: 2;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;
+  font-weight: bold;
 }
 
-#addOptionButton {
+#addOptionButton, #createPollButton {
   margin-top: 20px;
 }
 
@@ -99,19 +94,33 @@ li div::after {
   flex-direction: column;
 }
 
-.loading {
-  display: none; /* Hidden by default, display when loading */
-  position: absolute;
-  z-index: 1000;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
 footer {
   position: absolute;
   right: 10px;
   bottom: 10px;
   padding: 10px;
   text-align: right;
+}
+
+.vote-option {
+  display: block;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 2px solid transparent; /* To maintain layout on focus */
+}
+
+.vote-option:hover {
+  background-color: #e8e8e8;
+}
+
+.vote-option input[type="radio"] {
+  margin-right: 10px;
+}
+
+/* Style adjustments for when the radio is checked, optional */
+.vote-option input[type="radio"]:checked + span {
+  font-weight: bold;
 }
