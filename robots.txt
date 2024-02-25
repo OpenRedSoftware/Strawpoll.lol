@@ -1,0 +1,6 @@
+# robots.txt for https://strawpoll.lol/
+User-agent: *
+Disallow: /firebaseConfig.js
+
+# Allow full access to static files for better SEO
+Allow: /index.css
