@@ -7,7 +7,7 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  position: relative; /* Set position to relative for absolute child positioning */
+  position: relative; /* Ensure footer placement at the bottom */
 }
 
 #content {
@@ -62,25 +62,26 @@ ul {
 }
 
 li {
-  position: relative;
   background: #ecf0f1;
   margin-bottom: 10px;
   border-radius: 5px;
-  overflow: hidden;
+  padding: 10px; /* Adjusted for spacing */
+  position: relative; /* For bar positioning */
 }
 
 li > div {
-  background-color: #3498db;
+  background-color: #e67e22; /* Adjusted to match button hover color for consistency */
   height: 100%;
-  border-radius: 5px 0 0 5px; /* Match the li border radius */
+  border-radius: 5px 0 0 5px;
+  position: absolute; /* Full width of vote percentage */
+  left: 0;
+  top: 0;
 }
 
 li > span {
-  position: absolute;
-  z-index: 2;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative; /* Ensure text is readable on top of the bar */
+  z-index: 2; /* Above the bar */
+  padding-left: 10px; /* Spacing from the edge of the bar */
   color: #000;
   font-weight: bold;
 }
@@ -109,7 +110,7 @@ footer {
   background-color: #f0f0f0;
   border-radius: 5px;
   cursor: pointer;
-  border: 2px solid transparent; /* To maintain layout on focus */
+  border: 2px solid transparent; /* Maintain layout on focus */
 }
 
 .vote-option:hover {
@@ -120,7 +121,7 @@ footer {
   margin-right: 10px;
 }
 
-/* Style adjustments for when the radio is checked, optional */
+/* Additional Styles for Checked Radio */
 .vote-option input[type="radio"]:checked + span {
   font-weight: bold;
 }
