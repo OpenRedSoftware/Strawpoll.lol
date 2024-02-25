@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Strawpoll.lol - Simple Strawpoll.me clone</title>
-  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="/index.css">
 
   <script type="module">
     // Firebase App (the core Firebase SDK) is always required and must be listed first
@@ -21,31 +21,24 @@
       child
     } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
-    import { firebaseConfig } from './firebaseConfig.js';
+    import { firebaseConfig } from '/firebaseConfig.js';
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
     window.onload = function () {
-      // Get URL parameters
-      const params = new URLSearchParams(window.location.search);
-      const page = params.get('page'); // 'vote', 'results', or 'create'
+      const path = window.location.pathname.split('/').filter(Boolean);
 
-      // Display appropriate content based on the page parameter
-      switch (page) {
-        case 'vote':
-          displayVotePage();
-          break;
-        case 'results':
-          displayResultsPage();
-          break;
-        default:
-          displayCreatePollPage();
+      if (path.length === 1) {
+        displayResultsPage(path[0]);
+      } else if (path.length === 2 && path[1] === 'vote') {
+        displayVotePage(path[0]);
+      } else {
+        displayCreatePollPage();
       }
     };
 
-    function displayVotePage() {
-      const pollId = new URLSearchParams(window.location.search).get('poll');
+    function displayVotePage(pollId) {
       if (!pollId) {
         document.getElementById('content').innerHTML = 'Poll ID is required.';
         return;
@@ -73,7 +66,7 @@
 
           // Add the event listener to the button
           document.getElementById('submitVoteButton').addEventListener('click', () => submitVote(pollId));
-          document.getElementById('goResultsButton').addEventListener('click', () => window.location.href = `?page=results&pollId=${pollId}`);
+          document.getElementById('goResultsButton').addEventListener('click', () => window.location.href = `/${pollId}`);
         } else {
           document.getElementById('content').innerHTML = 'Poll not found.';
         }
@@ -83,8 +76,7 @@
     }
 
 
-    function displayResultsPage() {
-      const pollId = new URLSearchParams(window.location.search).get('pollId');
+    function displayResultsPage(pollId) {
       const contentDiv = document.getElementById('content');
       contentDiv.innerHTML = ''; // Clear previous content
 
@@ -134,7 +126,7 @@
             contentDiv.innerHTML = 'No votes have been cast yet.';
           }
 
-          html += `<button id="goVotePageButton">Vote</button>`;
+          html += `<button id="goVotePageButton" onclick="window.location.href='/${pollId}/vote'">Vote</button>`;
         } else {
           contentDiv.innerHTML = 'Poll not found.';
         }
@@ -205,8 +197,8 @@
         };
         const pollRef = ref(db, 'polls/' + pollId);
         return set(pollRef, newPoll).then(() => pollId); // Return pollId for the next .then()
-      }).then((pollId) => { // Receive pollId here
-        window.location.href = `?page=vote&poll=${pollId}`;
+      }).then((pollId) => {
+        window.location.href = `/${pollId}/vote`;
       }).catch((error) => {
         console.error('Error creating poll: ', error);
       }).finally(() => {
@@ -223,7 +215,7 @@
       runTransaction(voteRef, (currentVotes) => {
         return (currentVotes || 0) + 1;
       }).then(() => {
-        window.location.href = `?page=results&pollId=${pollId}`;
+        window.location.href = `/${pollId}`;
       }).catch((error) => {
         console.error('Error submitting vote: ', error);
       }).finally(() => {
