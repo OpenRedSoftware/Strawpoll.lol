@@ -51,6 +51,9 @@
       get(pollRef).then((snapshot) => {
         if (snapshot.exists()) {
           const pollData = snapshot.val();
+
+          document.querySelector('meta[name="description"]').setAttribute("content", pollData.question + " - Vote now on Strawpoll.lol");
+
           // Create the HTML for the voting options
           let html = `<h1>${pollData.question}</h1>`;
           pollData.options.forEach((option, index) => {
@@ -86,6 +89,8 @@
       onValue(pollRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
+          document.querySelector('meta[name="description"]').setAttribute("content", data.question + " - See results on Strawpoll.lol");
+
           // Calculate total votes
           const totalVotes = Object.values(data.votes).reduce((total, num) => total + num, 0);
 
