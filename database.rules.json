@@ -11,14 +11,14 @@
         }
       }
     },
-    "nextPollId": {
+    "currentPollId": {
       // Allow read access
       ".read": "true",
 
       // Increment operation only
       ".write": "!data.exists() && newData.val() === 1 || newData.val() === data.val() + 1",
 
-      // Validate that the nextPollId is a number
+      // Validate that the currentPollId is a number
       ".validate": "newData.isNumber()"
     }
   }

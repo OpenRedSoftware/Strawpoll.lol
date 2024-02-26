@@ -34,7 +34,7 @@ function addOption() {
 }
 
 async function getNewPollId() {
-  const pollIdRef = ref(db, 'nextPollId');
+  const pollIdRef = ref(db, 'currentPollId');
   return runTransaction(pollIdRef, (currentId) => {
     return (currentId || 0) + 1;
   }).then((transaction) => {
