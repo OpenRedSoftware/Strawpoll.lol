@@ -27,7 +27,7 @@
           </ul>
           <button>Vote</button>
           `;
-      const { displayResultsPage } = await import('/createResultsPage/resultsPage.js');
+      const { displayResultsPage } = await import('/resultsPage/resultsPage.js');
       displayResultsPage(path[0]);
     } else if (path.length === 2 && path[1] === 'vote') {
       document.getElementById('content').innerHTML = `
@@ -36,7 +36,7 @@
           <label class="vote-option"><input type="radio"></label>
           <button style="margin-right: 0.5rem;">Vote</button><button>Results</button>
           `;
-      const { displayVotePage } = await import('/createVotePage/votePage.js');
+      const { displayVotePage } = await import('/votePage/votePage.js');
       displayVotePage(path[0]);
     } else {
       document.getElementById('content').innerHTML = `

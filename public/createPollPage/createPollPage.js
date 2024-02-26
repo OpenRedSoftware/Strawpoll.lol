@@ -38,7 +38,6 @@ async function getNewPollId() {
   return runTransaction(pollIdRef, (currentId) => {
     return (currentId || 0) + 1;
   }).then((transaction) => {
-    console.log("Updated poll ID to: ", transaction.snapshot.val());
     return transaction.snapshot.val();
   }).catch((error) => {
     console.error('Transaction failed: ', error);

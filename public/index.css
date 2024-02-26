@@ -71,7 +71,6 @@ li {
   background: #fff7e6; /* Matches rgb(255, 247, 230) */
   margin-bottom: 10px;
   border-radius: 5px;
-  overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px;
 }
@@ -90,7 +89,6 @@ li {
   z-index: 2;
   margin-left: 10px;
   font-weight: normal;
-  white-space: nowrap;
   padding-left: 10px;
 }
 
