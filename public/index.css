@@ -21,7 +21,7 @@ body {
   border: 2px solid #e6ba8f;
 }
 
-h1, h2 {
+h1 {
   color: #d35400;
   text-align: center;
   margin: 20px 0;
@@ -32,7 +32,9 @@ form {
   flex-direction: column;
 }
 
-input[type="text"], input[type="radio"], button {
+input[type="text"],
+input[type="radio"],
+button {
   margin: 10px 0;
   padding: 10px;
   border-radius: 5px;
@@ -62,31 +64,38 @@ ul {
 }
 
 li {
-  background: #ecf0f1;
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 36px;
+  background: #fff7e6; /* Matches rgb(255, 247, 230) */
   margin-bottom: 10px;
   border-radius: 5px;
-  padding: 10px; /* Adjusted for spacing */
-  position: relative; /* For bar positioning */
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
 }
 
-li > div {
-  background-color: #e67e22; /* Adjusted to match button hover color for consistency */
-  height: 100%;
-  border-radius: 5px 0 0 5px;
-  position: absolute; /* Full width of vote percentage */
-  left: 0;
+.poll-bar {
+  background-color: #f0f0f0; /* Matches rgb(240, 240, 240) */
+  position: absolute;
   top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1;
+  border-radius: 5px 0 0 5px;
 }
 
-li > span {
-  position: relative; /* Ensure text is readable on top of the bar */
-  z-index: 2; /* Above the bar */
-  padding-left: 10px; /* Spacing from the edge of the bar */
-  color: #000;
-  font-weight: bold;
+.poll-text {
+  z-index: 2;
+  margin-left: 10px;
+  font-weight: normal;
+  white-space: nowrap;
+  padding-left: 10px;
 }
 
-#addOptionButton, #createPollButton {
+#addOptionButton,
+#createPollButton {
   margin-top: 20px;
 }
 

@@ -13,13 +13,43 @@
   <script type="module">
     const path = window.location.pathname.split('/').filter(Boolean);
 
+    // SSR? These load empty shells of the actual page for instant load time UX!
     if (path.length === 1) {
+      document.getElementById('content').innerHTML = `
+          <h1>Loading Results..</h1>
+          <ul>
+            <li>
+              <div class="poll-bar" style="width: 33.3333%;"></div>
+            </li>
+            <li>
+              <div class="poll-bar" style="width: 66.6667%;"></div>
+            </li>
+          </ul>
+          <button>Vote</button>
+          `;
       const { displayResultsPage } = await import('/createResultsPage/resultsPage.js');
       displayResultsPage(path[0]);
     } else if (path.length === 2 && path[1] === 'vote') {
+      document.getElementById('content').innerHTML = `
+          <h1>Loading Question..</h1>
+          <label class="vote-option"><input type="radio"></label>
+          <label class="vote-option"><input type="radio"></label>
+          <button style="margin-right: 0.5rem;">Vote</button><button>Results</button>
+          `;
       const { displayVotePage } = await import('/createVotePage/votePage.js');
       displayVotePage(path[0]);
     } else {
+      document.getElementById('content').innerHTML = `
+          <h1>Create a New Poll</h1>
+          <form>
+            <input type="text" placeholder="Enter poll question">
+            <div id="pollOptions">
+              <input type="text" placeholder="Option 1">
+              <input type="text" placeholder="Option 2">
+            </div>
+            <button id="addOptionButton">Add Option</button>
+            <button id="createPollButton">Create Poll</button>
+          </form>`;
       const { displayCreatePollPage } = await import('/createPollPage/createPollPage.js');
       displayCreatePollPage();
     }
@@ -28,14 +58,6 @@
 
 <body>
   <div id="content">
-    <h1>Loading..</h1>
-    <form id="createPollForm">
-      <input type="text" id="pollQuestion" placeholder="Enter poll question" required>
-      <div id="pollOptions">
-        <input type="text" class="poll-option" placeholder="Option 1" required>
-        <input type="text" class="poll-option" placeholder="Option 2" required>
-      </div>
-    </form>
   </div>
   <footer>
     <a href="/">Create a Poll</a> |

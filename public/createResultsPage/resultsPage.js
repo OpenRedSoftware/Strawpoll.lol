@@ -13,9 +13,9 @@ export function displayResultsPage(pollId) {
       // Calculate total votes
       const totalVotes = Object.values(data.votes).reduce((total, num) => total + num, 0);
 
-      contentDiv.innerHTML = ''; // Clear previous content
       // Check if totalVotes is greater than zero
       if (totalVotes > 0) {
+        contentDiv.innerHTML = '';
         // Create results header
         const header = document.createElement('h1');
         header.textContent = data.question;
@@ -23,46 +23,21 @@ export function displayResultsPage(pollId) {
 
         // Create a list to display poll results
         const list = document.createElement('ul');
+
+        // Iterate through each vote option to create list items
         for (const [option, votes] of Object.entries(data.votes)) {
           const item = document.createElement('li');
-          item.style.cssText = `
-  display: flex;
-  align-items: center; /* Vertically centers the flex items */
-  position: relative;
-  min-height: 36px;
-  background: #fff7e6;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-`;
           const percentage = votes * 100 / totalVotes;
           const bar = document.createElement('div');
-          bar.style.cssText = `
-    width: ${percentage}%;
-    background-color: #f0f0f0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 1;
-    border-radius: 5px 0 0 5px; /* Rounded corners on the left side */
-  `; // Adjusted color and added border-radius
-
+          bar.className = 'poll-bar';
+          bar.style.width = `${percentage}%`;
           const text = document.createElement('span');
+          text.className = 'poll-text';
           text.textContent = `${option}: ${votes} votes (${percentage.toFixed(2)}%)`;
-          text.style.cssText = `
-  z-index: 2;
-  margin-left: 10px; /* Replaces the 'left' property */
-  color: #000;
-  font-weight: normal;
-  white-space: nowrap;
-`;
           item.appendChild(bar);
-          item.appendChild(text); // Ensure text is added after the bar so it appears on top
+          item.appendChild(text);
           list.appendChild(item);
         }
-
         contentDiv.appendChild(list);
         contentDiv.innerHTML += `<button id="goVotePageButton" onclick="window.location.href='/${pollId}/vote'">Vote</button>`;
       } else {
