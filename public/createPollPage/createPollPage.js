@@ -1,7 +1,19 @@
-import { ref, set, runTransaction } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
-import { db } from '../database.js';
-
 export function displayCreatePollPage() {
+  const html = `
+    <h1>Create a New Poll</h1>
+    <form id="createPollForm">
+      <input type="text" id="pollQuestion" placeholder="Enter poll question" required>
+      <div id="pollOptions">
+        <input type="text" class="poll-option" placeholder="Option 1" required>
+        <input type="text" class="poll-option" placeholder="Option 2" required>
+      </div>
+      <button type="button" id="addOptionButton">Add Option</button>
+      <button type="submit" id="createPollButton">Create Poll</button>
+    </form>
+  `;
+
+  document.getElementById('content').innerHTML = html;
+
   // Set up event listeners
   document.getElementById('addOptionButton').addEventListener('click', addOption);
   document.getElementById('createPollForm').addEventListener('submit', createPoll);
@@ -18,8 +30,24 @@ function addOption() {
   pollOptionsDiv.appendChild(newOptionInput);
 }
 
+async function getNewPollId() {
+  const { ref, runTransaction } = await import('https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js');
+  const { db } = await import('../database.js');
+  const pollIdRef = ref(db, 'nextPollId');
+  return runTransaction(pollIdRef, (currentId) => {
+    return (currentId || 0) + 1;
+  }).then((transaction) => {
+    console.log("Updated poll ID to: ", transaction.snapshot.val());
+    return transaction.snapshot.val();
+  }).catch((error) => {
+    console.error('Transaction failed: ', error);
+  });
+}
+
 async function createPoll(event) {
   event.preventDefault();
+  const { db } = await import('../database.js');
+  const { ref, set } = await import('https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js');
   const createButton = document.getElementById('createPollButton');
   createButton.disabled = true; // Disable the button during the async operation
   const pollQuestion = document.getElementById('pollQuestion').value;
@@ -44,14 +72,3 @@ async function createPoll(event) {
   });
 }
 
-async function getNewPollId() {
-  const pollIdRef = ref(db, 'nextPollId');
-  return runTransaction(pollIdRef, (currentId) => {
-    return (currentId || 0) + 1;
-  }).then((transaction) => {
-    console.log("Updated poll ID to: ", transaction.snapshot.val());
-    return transaction.snapshot.val();
-  }).catch((error) => {
-    console.error('Transaction failed: ', error);
-  });
-}
