@@ -1,19 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Strawpoll.lol - Simple Strawpoll.me clone</title>
-  <meta name="description" content="Create a poll in seconds - No signup. No ads. No complexity. Free and open source." />
+  <meta name="description"
+    content="Create a poll in seconds - No signup. No ads. No complexity. Free and open source." />
   <link rel="stylesheet" href="/index.css">
 </head>
+
 <body>
-  <div id="content"></div>
+  <div id="content">
+    <h1>Create a New Poll</h1>
+    <form id="createPollForm">
+      <input type="text" id="pollQuestion" placeholder="Enter poll question" required>
+      <div id="pollOptions">
+        <input type="text" class="poll-option" placeholder="Option 1" required>
+        <input type="text" class="poll-option" placeholder="Option 2" required>
+      </div>
+      <button type="button" id="addOptionButton">Add Option</button>
+      <button type="submit" id="createPollButton">Create Poll</button>
+    </form>
+  </div>
   <footer>
     <a href="/">Create a Poll</a> |
     <a href="https://github.com/OpenRedSoftware/strawpoll.lol" target="_blank">Source Code</a>
   </footer>
-  <!-- Import the app.js module -->
-  <script type="module" src="/app.js"></script>
+  <!-- Inline JavaScript from app.js -->
+  <script>
+    window.onload = async function () {
+      const path = window.location.pathname.split('/').filter(Boolean);
+
+      if (path.length === 1) {
+        const { displayResultsPage } = await import('/createResultsPage/resultsPage.js');
+        displayResultsPage(path[0]);
+      } else if (path.length === 2 && path[1] === 'vote') {
+        const { displayVotePage } = await import('/createVotePage/votePage.js');
+        displayVotePage(path[0]);
+      } else {
+        const { displayCreatePollPage } = await import('/createPollPage/createPollPage.js');
+        displayCreatePollPage();
+      }
+    };
+  </script>
 </body>
+
 </html>
