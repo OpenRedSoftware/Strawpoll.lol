@@ -1,3 +1,6 @@
+import { ref, runTransaction, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { db } from '../database.js'; 
+
 export function displayCreatePollPage() {
   const html = `
     <h1>Create a New Poll</h1>
@@ -31,8 +34,6 @@ function addOption() {
 }
 
 async function getNewPollId() {
-  const { ref, runTransaction } = await import('https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js');
-  const { db } = await import('../database.js');
   const pollIdRef = ref(db, 'nextPollId');
   return runTransaction(pollIdRef, (currentId) => {
     return (currentId || 0) + 1;
@@ -46,8 +47,6 @@ async function getNewPollId() {
 
 async function createPoll(event) {
   event.preventDefault();
-  const { db } = await import('../database.js');
-  const { ref, set } = await import('https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js');
   const createButton = document.getElementById('createPollButton');
   createButton.disabled = true; // Disable the button during the async operation
   const pollQuestion = document.getElementById('pollQuestion').value;

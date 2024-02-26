@@ -1,9 +1,8 @@
 import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
-import { db } from '../database.js'; 
+import { db } from '../database.js';
 
 export function displayResultsPage(pollId) {
   const contentDiv = document.getElementById('content');
-  contentDiv.innerHTML = ''; // Clear previous content
 
   const pollRef = ref(db, 'polls/' + pollId);
   onValue(pollRef, (snapshot) => {
@@ -14,6 +13,7 @@ export function displayResultsPage(pollId) {
       // Calculate total votes
       const totalVotes = Object.values(data.votes).reduce((total, num) => total + num, 0);
 
+      contentDiv.innerHTML = ''; // Clear previous content
       // Check if totalVotes is greater than zero
       if (totalVotes > 0) {
         // Create results header
