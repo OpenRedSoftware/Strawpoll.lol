@@ -3,6 +3,4 @@ import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-d
 import { firebaseConfig } from '/firebaseConfig.js';
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-export { db };
+export const db = getDatabase(app);

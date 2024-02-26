@@ -1,7 +1,7 @@
 import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
-import { db } from './database.js'; 
+import { db } from '../database.js'; 
 
-export default function displayResultsPage(pollId) {
+export function displayResultsPage(pollId) {
   const contentDiv = document.getElementById('content');
   contentDiv.innerHTML = ''; // Clear previous content
 
